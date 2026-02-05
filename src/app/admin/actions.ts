@@ -4,8 +4,14 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { Database } from '@/types/database.types'
+// Define the state type for actions
+export type ActionState = {
+    error?: string
+    success?: boolean
+    message?: string
+}
 
-export async function createLink(prevState: any, formData: FormData) {
+export async function createLink(prevState: ActionState, formData: FormData): Promise<ActionState> {
     const supabase = await createClient()
 
     const {
@@ -49,7 +55,7 @@ export async function createLink(prevState: any, formData: FormData) {
     return { success: true }
 }
 
-export async function deleteLink(prevState: any, id: string) {
+export async function deleteLink(prevState: any, id: string): Promise<ActionState> {
     const supabase = await createClient()
 
     const {

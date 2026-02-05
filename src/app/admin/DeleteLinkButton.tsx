@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { deleteLink } from './actions'
+import { deleteLink, ActionState } from './actions'
 
 // Simple Trash Icon component
 function TrashIcon({ className }: { className?: string }) {
@@ -34,11 +34,12 @@ export function DeleteLinkButton({ id }: { id: string }) {
     // However, useActionState works best with (prevState, formData).
 
     // Let's wrap it properly:
-    const action = async (prevState: any, formData: FormData) => {
+    const action = async (prevState: ActionState, formData: FormData) => {
         return await deleteLink(prevState, id);
     }
 
-    const [state, formAction, isPending] = useActionState(action, null)
+    const initialState: ActionState = { message: '', error: '' }
+    const [state, formAction, isPending] = useActionState(action, initialState)
 
     return (
         <form action={formAction}>

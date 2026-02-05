@@ -1,10 +1,12 @@
 'use client'
 
 import { useActionState } from 'react'
-import { createLink } from './actions'
+import { createLink, ActionState } from './actions'
 
-const initialState = {
+const initialState: ActionState = {
     message: '',
+    error: '',
+    success: false
 }
 
 export function CreateLinkForm() {
