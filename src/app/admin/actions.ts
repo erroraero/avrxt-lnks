@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { Database } from '@/types/database.types'
 
-export async function createLink(formData: FormData) {
+export async function createLink(prevState: any, formData: FormData) {
     const supabase = await createClient()
 
     const {
@@ -49,7 +49,7 @@ export async function createLink(formData: FormData) {
     return { success: true }
 }
 
-export async function deleteLink(id: string) {
+export async function deleteLink(prevState: any, id: string) {
     const supabase = await createClient()
 
     const {

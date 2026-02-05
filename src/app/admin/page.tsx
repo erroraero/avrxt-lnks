@@ -1,29 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { createLink, deleteLink } from './actions'
 import { Database } from '@/types/database.types'
-
-// Simple Trash Icon component
-function TrashIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={className}
-        >
-            <path d="M3 6h18" />
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-        </svg>
-    )
-}
+import { CreateLinkForm } from './CreateLinkForm'
+import { DeleteLinkButton } from './DeleteLinkButton'
 
 export default async function AdminPage() {
     const supabase = await createClient()
@@ -57,30 +36,7 @@ export default async function AdminPage() {
                     </div>
                 </header>
 
-                <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 backdrop-blur-sm">
-                    <h2 className="text-xl font-semibold mb-4">Create New Link</h2>
-                    <form action={createLink} className="flex gap-4 flex-col md:flex-row">
-                        <input
-                            name="slug"
-                            placeholder="Slug (e.g. ig)"
-                            className="bg-black/50 border border-zinc-800 rounded-lg px-4 py-2 flex-shrink-0 md:w-48 focus:ring-2 focus:ring-white/20 focus:outline-none transition-all placeholder:text-zinc-600"
-                            required
-                        />
-                        <input
-                            name="target_url"
-                            placeholder="Target URL (https://...)"
-                            className="bg-black/50 border border-zinc-800 rounded-lg px-4 py-2 flex-grow focus:ring-2 focus:ring-white/20 focus:outline-none transition-all placeholder:text-zinc-600"
-                            required
-                            type="url"
-                        />
-                        <button
-                            type="submit"
-                            className="bg-white text-black font-medium px-6 py-2 rounded-lg hover:bg-zinc-200 transition-colors"
-                        >
-                            Create
-                        </button>
-                    </form>
-                </div>
+                <CreateLinkForm />
 
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold">Your Links</h2>
@@ -99,15 +55,7 @@ export default async function AdminPage() {
                                         <div className="text-xs text-zinc-600 font-mono">
                                             {link.clicks || 0} clicks
                                         </div>
-                                        <form action={deleteLink.bind(null, link.id)}>
-                                            <button
-                                                type="submit"
-                                                className="p-2 text-zinc-500 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                                                title="Delete Link"
-                                            >
-                                                <TrashIcon className="w-4 h-4" />
-                                            </button>
-                                        </form>
+                                        <DeleteLinkButton id={link.id} />
                                     </div>
                                 </div>
                             ))}
