@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Database } from '@/types/database.types'
 import { CreateLinkForm } from './CreateLinkForm'
 import { DeleteLinkButton } from './DeleteLinkButton'
+import { EditLinkModal } from './EditLinkModal'
 
 export default async function AdminPage() {
     const supabase = await createClient()
@@ -55,7 +56,10 @@ export default async function AdminPage() {
                                         <div className="text-xs text-zinc-600 font-mono">
                                             {link.clicks || 0} clicks
                                         </div>
-                                        <DeleteLinkButton id={link.id} />
+                                        <div className="flex items-center gap-2">
+                                            <EditLinkModal link={link} />
+                                            <DeleteLinkButton id={link.id} />
+                                        </div>
                                     </div>
                                 </div>
                             ))}
