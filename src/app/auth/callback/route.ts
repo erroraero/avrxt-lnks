@@ -3,9 +3,10 @@ import { createClient } from '@/utils/supabase/server';
 import { checkDiscordRole } from '@/utils/discord';
 
 export async function GET(request: Request) {
-    const { searchParams, origin } = new URL(request.url);
+    const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     const next = searchParams.get('next') ?? '/admin';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lnks.avrxt.in';
 
     if (code) {
         const supabase = await createClient();
@@ -13,8 +14,6 @@ export async function GET(request: Request) {
 
         if (!error && data.session) {
             // Check for Discord Role
-            // The provider_token is usually available in the session returned by exchangeCodeForSession
-            // Note: This requires Supabase to be configured to return the provider token.
             const providerToken = data.session.provider_token;
 
             if (providerToken) {
@@ -26,28 +25,22 @@ export async function GET(request: Request) {
 
                     if (!authorized) {
                         await supabase.auth.signOut();
-                        return NextResponse.redirect(`${origin}/auth/login?error=${encodeURIComponent(rbacError || 'Unauthorized')}`);
+                        return NextResponse.redirect(`${baseUrl}/auth/login?error=${encodeURIComponent(rbacError || 'Unauthorized')}`);
                     }
 
                     // Authorized
-                    return NextResponse.redirect(`${origin}${next}`);
+                    return NextResponse.redirect(`${baseUrl}${next}`);
                 } else {
-                    // If vars are missing, log error and maybe allow or block? 
-                    // Assuming block for safety, or allow if not configured? 
-                    // User specified "required role avrxt.in role my server", so we MUST block if not configured.
                     await supabase.auth.signOut();
-                    return NextResponse.redirect(`${origin}/auth/login?error=Server configuration error`);
+                    return NextResponse.redirect(`${baseUrl}/auth/login?error=Server configuration error`);
                 }
             } else {
-                // No provider token found
-                // This can happen if the user logged in previously or config is wrong.
-                // Force sign out and error.
                 await supabase.auth.signOut();
-                return NextResponse.redirect(`${origin}/auth/login?error=Could not verify Discord membership`);
+                return NextResponse.redirect(`${baseUrl}/auth/login?error=Could not verify Discord membership`);
             }
         }
     }
 
     // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/login?error=Auth failed`);
+    return NextResponse.redirect(`${baseUrl}/auth/login?error=Auth failed`);
 }
